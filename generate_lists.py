@@ -8,15 +8,30 @@ reddit = praw.Reddit(client_id=REDDIT_CLIENT_ID,
 
 ayymd = reddit.subreddit('AyyMD')
 titles = []
-rgx = '(?<=add ).*(?= to)' #regex to find the thing to add to the list
+links = []
+rgxThingName = '(?i)(?<=add ).*(?= to)' #regex to find the thing to add to the list
+# TODO
+# sort out the god damn instance where the list name is potentially followed by brackets, quotes, etc that then have extra stuff after them
+rgxListName = '(?i)(?<=list of )(.*)(?<![.?!])' #regex to find the titles of any lists
 
 
-def get_titles(term): #scrape post titles
-    for submission in ayymd.search('title:' + term, sort='top'):
-        #print(submission.title)
-        print(re.search(rgx, (submission.title).lower()).group())
-        titles.append(re.search(rgx, (submission.title).lower()).group())
+def get_title(post, term, rgx): #scrape post titles
+    print(re.sub(term+' ', '', re.search(rgx, (post.title)).group()))
+    titles.append(re.sub(term+' ', '', re.search(rgx, (post.title)).group()))
+
+def get_link(post): #get the url of the post
+    print(post.url)
+    links.append(post.url)
 
 entry = input() #approved or disapproved?
-get_titles(entry)
-print(titles)
+
+for submission in ayymd.search('title:' + entry, sort='top'):
+    try:
+        get_title(submission, entry, rgxListName)
+        if not submission.is_self: #if it's not a text post, grab the link
+            get_link(submission)
+    except AttributeError:
+        pass
+
+#get_titles(entry, rgxListName)
+#print(links)
