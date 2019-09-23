@@ -1,3 +1,8 @@
+# TODO
+# remove the lower case-ness (ie keep the original case)
+# clean up code
+# format into html for webpage
+
 import praw
 import re
 from settings import *
@@ -7,31 +12,32 @@ reddit = praw.Reddit(client_id=REDDIT_CLIENT_ID,
                      user_agent=REDDIT_USER_AGENT) #praw setup
 
 ayymd = reddit.subreddit('AyyMD')
+allLists = {}
 titles = []
 links = []
-rgxThingName = '(?i)(?<=add ).*(?= to)' #regex to find the thing to add to the list
-# TODO
-# sort out the god damn instance where the list name is potentially followed by brackets, quotes, etc that then have extra stuff after them
-rgxListName = '(?i)(?<=list of )(.*)(?<![.?!])' #regex to find the titles of any lists
+rgxListName = re.compile(r'list of ([a-zA-Z\s-]+)', re.I) #regex to find the list name to add thing(s) to
+rgxListItem = re.compile(r'(?<= add ).*(?= to )', re.I) #regex to find the thing to add to the list
 
-
-def get_title(post, term, rgx): #scrape post titles
-    print(re.sub(term+' ', '', re.search(rgx, (post.title)).group()))
-    titles.append(re.sub(term+' ', '', re.search(rgx, (post.title)).group()))
-
-def get_link(post): #get the url of the post
-    print(post.url)
-    links.append(post.url)
+def get_term(post, term, rgx, grp): #scrape post titles
+    #print(re.sub(term, '', re.search(rgx, (post.title)).group(grp), flags=re.IGNORECASE).lower()) #this works, but please god clean it up
+    
+    return re.sub(term, '', re.search(rgx, (post.title)).group(grp), flags=re.IGNORECASE).lower().strip()
 
 entry = input() #approved or disapproved?
 
 for submission in ayymd.search('title:' + entry, sort='top'):
     try:
-        get_title(submission, entry, rgxListName)
+        listName = get_term(submission, entry+' ', rgxListName, 1)
+        listItem = get_term(submission, entry+' ', rgxListItem, 0)
+        
+        if listName not in allLists:
+            allLists[listName] = []
+        allLists[listName].append(listItem)
+        
         if not submission.is_self: #if it's not a text post, grab the link
-            get_link(submission)
+            allLists[listName].append(submission.url)
     except AttributeError:
         pass
 
-#get_titles(entry, rgxListName)
-#print(links)
+for list in allLists:
+    print(list + ':' + str(allLists[list]))
