@@ -1,7 +1,7 @@
 # TODO
 # remove the lower case-ness (ie keep the original case)
 # clean up code
-# format into html for webpage
+# some shit get truncated i think (some links)
 
 import praw
 import re
@@ -13,31 +13,28 @@ reddit = praw.Reddit(client_id=REDDIT_CLIENT_ID,
 
 ayymd = reddit.subreddit('AyyMD')
 allLists = {}
-titles = []
-links = []
 rgxListName = re.compile(r'list of ([a-zA-Z\s-]+)', re.I) #regex to find the list name to add thing(s) to
 rgxListItem = re.compile(r'(?<= add ).*(?= to )', re.I) #regex to find the thing to add to the list
 
 def get_term(post, term, rgx, grp): #scrape post titles
-    #print(re.sub(term, '', re.search(rgx, (post.title)).group(grp), flags=re.IGNORECASE).lower()) #this works, but please god clean it up
-    
     return re.sub(term, '', re.search(rgx, (post.title)).group(grp), flags=re.IGNORECASE).lower().strip()
+
+def get_all_lists():
+    return allLists
 
 entry = input() #approved or disapproved?
 
-for submission in ayymd.search('title:' + entry, sort='top'):
+for submission in ayymd.search('title:' + entry, sort='top', limit=1000):
     try:
         listName = get_term(submission, entry+' ', rgxListName, 1)
         listItem = get_term(submission, entry+' ', rgxListItem, 0)
         
         if listName not in allLists:
-            allLists[listName] = []
-        allLists[listName].append(listItem)
+            allLists[listName] = {}
         
         if not submission.is_self: #if it's not a text post, grab the link
-            allLists[listName].append(submission.url)
+            allLists[listName][listItem] = submission.url
+        else:
+            allLists[listName][listItem] = '#'
     except AttributeError:
         pass
-
-for list in allLists:
-    print(list + ':' + str(allLists[list]))
