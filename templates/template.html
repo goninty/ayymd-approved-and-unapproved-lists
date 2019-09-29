@@ -34,23 +34,18 @@
         </nav>
 
         <div class="container my-3">
-
+            <div class="card-columns">
             {% for aList in allLists %}
-                {% if loop.index % 3 == 1 %}
-                    <div class="row my-3">
-                {% endif %}
-
-                <div class="col-md-4">
-                    <h5>{{aList}}</h5>
+                <div class="card m-0 p-0 border-0" style="background-color: #383838; color: #f8f9fa">
+                    <div class="card-body">
+                    <h6>{{aList}}</h6>
                     {% for item in allLists[aList] %}
                         <a href="{{allLists[aList][item]}}">{{item}}</a><br>
                     {% endfor %}
-                </div>
-
-                {% if loop.index % 3 == 0 %}
                     </div>
-                {% endif %}
+                </div>
             {% endfor %}
+            </div>
         </div>
 
 

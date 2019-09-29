@@ -13,11 +13,11 @@ reddit = praw.Reddit(client_id=REDDIT_CLIENT_ID,
 
 ayymd = reddit.subreddit('AyyMD')
 allLists = {}
-rgxListName = re.compile(r'list of ([a-zA-Z\s-]+)', re.I) #regex to find the list name to add thing(s) to
+rgxListName = re.compile(r'list of ([a-zA-Z0-9\s-]+)', re.I) #regex to find the list name to add thing(s) to
 rgxListItem = re.compile(r'(?<= add ).*(?= to )', re.I) #regex to find the thing to add to the list
 
 def get_term(post, term, rgx, grp): #scrape post titles
-    return re.sub(term, '', re.search(rgx, (post.title)).group(grp), flags=re.IGNORECASE).lower().strip()
+    return re.sub(term, '', re.search(rgx, (post.title)).group(grp), flags=re.IGNORECASE).strip()
 
 def get_all_lists():
     return allLists
