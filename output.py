@@ -13,7 +13,7 @@ env = Environment(
 
 template = env.get_template('template.html')
 
-out = io.open('ayymd.html', mode='w', encoding='utf-8')
+out = io.open('webpage/ayymd.html', mode='w', encoding='utf-8')
 
 allLists = get_all_lists()
 

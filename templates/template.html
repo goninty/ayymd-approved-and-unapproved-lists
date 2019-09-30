@@ -33,11 +33,16 @@
             </div>
         </nav>
 
+        <div class="container mt-3">
+            <p>These are r/AyyMD's "approved" and "unapproved" lists of companies, youtubers, people and other random stuff. Enjoy.</p>
+            <h4>r/AyyMD's approved lists</h4>
+        </div>
+
         <div class="container my-3">
             <div class="card-columns">
             {% for aList in allLists %}
-                <div class="card m-0 p-0 border-0" style="background-color: #383838; color: #f8f9fa">
-                    <div class="card-body">
+                <div class="card w-40 border-0" style="background-color: #383838; color: #f8f9fa">
+                    <div class="card-body" style="font:8px">
                     <h6>{{aList}}</h6>
                     {% for item in allLists[aList] %}
                         <a href="{{allLists[aList][item]}}">{{item}}</a><br>
